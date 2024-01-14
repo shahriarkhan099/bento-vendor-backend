@@ -1,5 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const vendor_controller_1 = require("../controllers/vendor.controller");
 const router = (0, express_1.Router)();
+router.get('/', vendor_controller_1.getAllVendors);
+router.post('/', vendor_controller_1.postVendor);
+router.put('/:vendorId', vendor_controller_1.updateVendor);
+router.delete('/:vendorId', vendor_controller_1.removeVendor);
+router.get('/search', vendor_controller_1.getVendorByName);
+router.get('/search/product', vendor_controller_1.getVendorByProductName);
+router.get('/products', vendor_controller_1.getAllVendorsWithProducts);
+router.get('/:vendorId', vendor_controller_1.getVendorById);
 exports.default = router;

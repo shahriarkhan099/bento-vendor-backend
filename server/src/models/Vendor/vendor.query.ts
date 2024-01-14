@@ -69,12 +69,12 @@ export async function findVendorByName (searchTerm: string) {
         [Op.or]: [
           {
             firstName: {
-              [Op.like]: `%${searchTerm}%`,
+              [Op.iLike]: `%${searchTerm}%`,
             },
           },
           {
             lastName: {
-              [Op.like]: `%${searchTerm}%`,
+              [Op.iLike]: `%${searchTerm}%`,
             },
           },
         ],
@@ -94,7 +94,7 @@ export async function findVendorByProductName (searchTerm: string) {
           model: Product,
           where: {
             name: {
-              [Op.like]: `%${searchTerm}%`,
+              [Op.iLike]: `%${searchTerm}%`,
             },
           },
         },
@@ -113,4 +113,39 @@ export async function findVendorById (vendorId: number) {
     } catch (error) {
       throw error;
     }
+}
+
+export async function findVendorByIdWithProducts (vendorId: number) {
+  try {
+    const vendor = await Vendor.findByPk(vendorId, {
+      include: [
+        {
+          model: Product,
+        },
+      ],
+    });
+    return vendor;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function findVendorsByNameAndProductName(searchTerm: string) {
+  try {
+    const vendorsByNamePromise = findVendorByName(searchTerm);
+    const vendorsByProductNamePromise = findVendorByProductName(searchTerm);
+
+    const [vendorsByName, vendorsByProductName] = await Promise.all([vendorsByNamePromise, vendorsByProductNamePromise]);
+
+    const uniqueVendors = [...vendorsByName, ...vendorsByProductName].reduce((acc, vendor) => {
+      if (!acc.has(vendor.id)) {
+        acc.set(vendor.id, vendor);
+      }
+      return acc;
+    }, new Map()).values();
+
+    return Array.from(uniqueVendors);
+  } catch (error) {
+    throw error;
+  }
 }
