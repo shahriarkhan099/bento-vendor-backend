@@ -1,7 +1,7 @@
 import { Model, DataTypes, Optional } from 'sequelize';
 import { IProduct } from '../../interfaces/product.interface'; 
 import sequelize from '..';
-import Order from '../Order/order.model';
+import Order from '../order/order.model';
 
 interface ProductCreationAttributes extends Optional<IProduct, 'id'> {};
 

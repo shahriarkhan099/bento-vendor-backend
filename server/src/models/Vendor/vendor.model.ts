@@ -1,8 +1,8 @@
 import { Model, DataTypes, Optional } from 'sequelize';
 import { IVendor } from '../../interfaces/vendor.interface'; 
 import sequelize from '..';
-import Order from '../Order/order.model';
-import Product from '../Product/product.model';
+import Order from '../order/order.model';
+import Product from '../product/product.model';
 
 interface VendorCreationAttributes extends Optional<IVendor, 'id'> {};
 
@@ -34,6 +34,7 @@ const Vendor = sequelize.define<VendorInstance>('vendors', {
   type: {
     type: DataTypes.STRING,
     allowNull: false,
+    defaultValue: 'normal vendor',
   },
   workingDays: {
     type: DataTypes.ARRAY(DataTypes.STRING), 
@@ -54,7 +55,7 @@ Vendor.hasMany(Product, {
     foreignKey: 'vendorId'
 });
 
-Order.belongsTo(Vendor);
+Product.belongsTo(Vendor);
 
 Vendor.hasMany(Order, {
     sourceKey: 'id',
