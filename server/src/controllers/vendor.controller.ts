@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { findAllVendors, findAllVendorsWithProducts, addVendor, editVendor, deleteVendor, findVendorByName, findVendorByProductName, findVendorById, findVendorByIdWithProducts, findVendorsByNameAndProductName } from "../models/vendor/vendor.query";
+import { findAllVendors, findAllVendorsWithProducts, addVendor, editVendor, deleteVendor, findVendorByName, findVendorByProductName, findVendorById, findVendorByIdWithProducts, findVendorsByNameAndProductName } from "../models/vendor1/vendor.query";
 
 export async function getAllVendors (req: Request, res: Response) {
   try {
