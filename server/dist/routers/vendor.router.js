@@ -11,4 +11,6 @@ router.get('/search', vendor_controller_1.getVendorByName);
 router.get('/search/product', vendor_controller_1.getVendorByProductName);
 router.get('/products', vendor_controller_1.getAllVendorsWithProducts);
 router.get('/:vendorId', vendor_controller_1.getVendorById);
+router.get('/:vendorId/products', vendor_controller_1.getVendorByIdWithProducts);
+router.get('/search/all', vendor_controller_1.getVendorsByNameAndProductName);
 exports.default = router;

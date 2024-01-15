@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findVendorById = exports.findVendorByProductName = exports.findVendorByName = exports.deleteVendor = exports.editVendor = exports.addVendor = exports.findAllVendorsWithProducts = exports.findAllVendors = void 0;
+exports.findVendorsByNameAndProductName = exports.findVendorByIdWithProducts = exports.findVendorById = exports.findVendorByProductName = exports.findVendorByName = exports.deleteVendor = exports.editVendor = exports.addVendor = exports.findAllVendorsWithProducts = exports.findAllVendors = void 0;
 const sequelize_1 = require("sequelize");
 const vendor_model_1 = __importDefault(require("./vendor.model"));
 const product_model_1 = __importDefault(require("../product/product.model"));
@@ -98,12 +98,12 @@ function findVendorByName(searchTerm) {
                     [sequelize_1.Op.or]: [
                         {
                             firstName: {
-                                [sequelize_1.Op.like]: `%${searchTerm}%`,
+                                [sequelize_1.Op.iLike]: `%${searchTerm}%`,
                             },
                         },
                         {
                             lastName: {
-                                [sequelize_1.Op.like]: `%${searchTerm}%`,
+                                [sequelize_1.Op.iLike]: `%${searchTerm}%`,
                             },
                         },
                     ],
@@ -126,7 +126,7 @@ function findVendorByProductName(searchTerm) {
                         model: product_model_1.default,
                         where: {
                             name: {
-                                [sequelize_1.Op.like]: `%${searchTerm}%`,
+                                [sequelize_1.Op.iLike]: `%${searchTerm}%`,
                             },
                         },
                     },
@@ -152,3 +152,41 @@ function findVendorById(vendorId) {
     });
 }
 exports.findVendorById = findVendorById;
+function findVendorByIdWithProducts(vendorId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const vendor = yield vendor_model_1.default.findByPk(vendorId, {
+                include: [
+                    {
+                        model: product_model_1.default,
+                    },
+                ],
+            });
+            return vendor;
+        }
+        catch (error) {
+            throw error;
+        }
+    });
+}
+exports.findVendorByIdWithProducts = findVendorByIdWithProducts;
+function findVendorsByNameAndProductName(searchTerm) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const vendorsByNamePromise = findVendorByName(searchTerm);
+            const vendorsByProductNamePromise = findVendorByProductName(searchTerm);
+            const [vendorsByName, vendorsByProductName] = yield Promise.all([vendorsByNamePromise, vendorsByProductNamePromise]);
+            const uniqueVendors = [...vendorsByName, ...vendorsByProductName].reduce((acc, vendor) => {
+                if (!acc.has(vendor.id)) {
+                    acc.set(vendor.id, vendor);
+                }
+                return acc;
+            }, new Map()).values();
+            return Array.from(uniqueVendors);
+        }
+        catch (error) {
+            throw error;
+        }
+    });
+}
+exports.findVendorsByNameAndProductName = findVendorsByNameAndProductName;

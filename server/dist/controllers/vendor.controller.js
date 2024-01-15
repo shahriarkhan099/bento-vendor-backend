@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllVendorsWithProducts = exports.getVendorById = exports.getVendorByProductName = exports.getVendorByName = exports.removeVendor = exports.updateVendor = exports.postVendor = exports.getAllVendors = void 0;
+exports.getVendorsByNameAndProductName = exports.getVendorByIdWithProducts = exports.getAllVendorsWithProducts = exports.getVendorById = exports.getVendorByProductName = exports.getVendorByName = exports.removeVendor = exports.updateVendor = exports.postVendor = exports.getAllVendors = void 0;
 const vendor_query_1 = require("../models/vendor/vendor.query");
 function getAllVendors(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -74,9 +74,14 @@ exports.removeVendor = removeVendor;
 function getVendorByName(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const searchTerm = String(req.query.searchTerm);
-            const vendors = yield (0, vendor_query_1.findVendorByName)(searchTerm);
-            res.status(200).json({ data: vendors });
+            const search = req.query.q;
+            const searchTerm = search === null || search === void 0 ? void 0 : search.toString();
+            if (searchTerm) {
+                const vendors = yield (0, vendor_query_1.findVendorByName)(searchTerm);
+                res.status(200).json({ data: vendors });
+            }
+            else
+                res.status(400).json({ message: "Invalid search term." });
         }
         catch (error) {
             res.status(500).send(error);
@@ -87,9 +92,14 @@ exports.getVendorByName = getVendorByName;
 function getVendorByProductName(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const searchTerm = String(req.query.searchTerm);
-            const vendors = yield (0, vendor_query_1.findVendorByProductName)(searchTerm);
-            res.status(200).json({ data: vendors });
+            const search = req.query.q;
+            const searchTerm = search === null || search === void 0 ? void 0 : search.toString();
+            if (searchTerm) {
+                const vendors = yield (0, vendor_query_1.findVendorByProductName)(searchTerm);
+                res.status(200).json({ data: vendors });
+            }
+            else
+                res.status(400).json({ message: "Invalid search term." });
         }
         catch (error) {
             res.status(500).send(error);
@@ -126,3 +136,38 @@ function getAllVendorsWithProducts(req, res) {
     });
 }
 exports.getAllVendorsWithProducts = getAllVendorsWithProducts;
+function getVendorByIdWithProducts(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const vendorId = Number(req.params.vendorId);
+            if (vendorId) {
+                const vendor = yield (0, vendor_query_1.findVendorByIdWithProducts)(vendorId);
+                res.status(200).json({ data: vendor });
+            }
+            else
+                res.status(400).json({ message: "Invalid Vendor ID." });
+        }
+        catch (error) {
+            res.status(500).send(error);
+        }
+    });
+}
+exports.getVendorByIdWithProducts = getVendorByIdWithProducts;
+function getVendorsByNameAndProductName(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const search = req.query.q;
+            const searchTerm = search === null || search === void 0 ? void 0 : search.toString();
+            if (searchTerm) {
+                const vendors = yield (0, vendor_query_1.findVendorsByNameAndProductName)(searchTerm);
+                res.status(200).json({ data: vendors });
+            }
+            else
+                res.status(400).json({ message: "Invalid search term." });
+        }
+        catch (error) {
+            res.status(500).send(error);
+        }
+    });
+}
+exports.getVendorsByNameAndProductName = getVendorsByNameAndProductName;
