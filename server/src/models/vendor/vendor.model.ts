@@ -2,7 +2,7 @@ import { Model, DataTypes, Optional } from 'sequelize';
 import { IVendor } from '../../interfaces/vendor.interface'; 
 import sequelize from '..';
 import Order from '../order/order.model';
-import Product from '../product1/product.model';
+import Product from '../product/product.model';
 
 interface VendorCreationAttributes extends Optional<IVendor, 'id'> {};
 

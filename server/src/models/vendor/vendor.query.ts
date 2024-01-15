@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import Vendor from "./vendor.model";
 import { IVendor } from "../../interfaces/vendor.interface";
-import Product from "../product1/product.model";
+import Product from "../product/product.model";
 
 export async function findAllVendors () {
   try {
