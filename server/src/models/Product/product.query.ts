@@ -16,6 +16,7 @@ export async function findAllProductOfVendor (vendorId: number) {
   }
 }
 
+
 export async function addProductToVendor (product: IProduct) {
   try {
     const newProduct = await Product.create(product);
