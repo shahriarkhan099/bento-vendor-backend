@@ -12,8 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteOrderOfVendor = exports.editOrderOfVendor = exports.addOrderToVendor = exports.findAllOrderOfVendor = void 0;
+exports.findOrderOfVendorWithAllProducts = exports.deleteOrderOfVendor = exports.editOrderOfVendor = exports.addOrderToVendor = exports.findAllOrderOfVendor = void 0;
 const order_model_1 = __importDefault(require("./order.model"));
+const productBatch_model_1 = __importDefault(require("../productBatch/productBatch.model"));
 function findAllOrderOfVendor(vendorId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -74,3 +75,22 @@ function deleteOrderOfVendor(orderId) {
     });
 }
 exports.deleteOrderOfVendor = deleteOrderOfVendor;
+function findOrderOfVendorWithAllProducts(vendorId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const orders = yield order_model_1.default.findAll({
+                where: {
+                    vendorId,
+                },
+                include: {
+                    model: productBatch_model_1.default,
+                },
+            });
+            return orders;
+        }
+        catch (error) {
+            throw error;
+        }
+    });
+}
+exports.findOrderOfVendorWithAllProducts = findOrderOfVendorWithAllProducts;

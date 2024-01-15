@@ -6,6 +6,7 @@ export interface IProduct {
     expiryDate: Date;
     minimumOrderAmount: number;
     volumeDiscount: number;
-    quantityUnit: number,
+    quantityUnit: string,
+    qty: number;
     vendorId: number;
 }

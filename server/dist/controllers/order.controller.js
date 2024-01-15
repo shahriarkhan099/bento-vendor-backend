@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeOrderOfVendor = exports.UpdateOrderOfVendor = exports.PostOrderToVendor = exports.getAllOrderOfVendor = void 0;
+exports.getOrderOfVendorWithAllProducts = exports.removeOrderOfVendor = exports.UpdateOrderOfVendor = exports.PostOrderToVendor = exports.getAllOrderOfVendor = void 0;
 const order_query_1 = require("../models/order/order.query");
 function getAllOrderOfVendor(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -81,3 +81,21 @@ function removeOrderOfVendor(req, res) {
     });
 }
 exports.removeOrderOfVendor = removeOrderOfVendor;
+function getOrderOfVendorWithAllProducts(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const vendorId = Number(req.params.vendorId);
+            if (vendorId) {
+                const orders = yield (0, order_query_1.findOrderOfVendorWithAllProducts)(vendorId);
+                res.status(200).json(orders);
+            }
+            else
+                res.status(400).json({ message: "Invalid Vendor ID." });
+        }
+        catch (error) {
+            console.log(error);
+            res.status(500).send(error);
+        }
+    });
+}
+exports.getOrderOfVendorWithAllProducts = getOrderOfVendorWithAllProducts;

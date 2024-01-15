@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const __1 = __importDefault(require(".."));
-const order_model_1 = __importDefault(require("../order/order.model"));
+const productBatch_model_1 = __importDefault(require("../productBatch/productBatch.model"));
 ;
 const Product = __1.default.define('products', {
     id: {
@@ -40,17 +40,24 @@ const Product = __1.default.define('products', {
         allowNull: false,
     },
     quantityUnit: {
+        type: sequelize_1.DataTypes.ENUM('gm', 'ml', 'kg', 'litre', 'piece', 'bottle', 'packet', 'can'),
+        allowNull: false,
+    },
+    qty: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
+        defaultValue: 1,
     },
     vendorId: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
 });
-Product.hasMany(order_model_1.default, {
+Product.hasMany(productBatch_model_1.default, {
     sourceKey: 'id',
-    foreignKey: 'productId'
+    foreignKey: 'productId',
 });
-order_model_1.default.belongsTo(Product);
+productBatch_model_1.default.belongsTo(Product, {
+    foreignKey: 'productId',
+});
 exports.default = Product;

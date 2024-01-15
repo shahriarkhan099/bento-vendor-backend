@@ -2,6 +2,7 @@ import { Model, DataTypes, Optional } from 'sequelize';
 import { IProduct } from '../../interfaces/product.interface'; 
 import sequelize from '..';
 import Order from '../order/order.model';
+import ProductBatch from '../productBatch/productBatch.model';
 
 interface ProductCreationAttributes extends Optional<IProduct, 'id'> {};
 
@@ -43,8 +44,13 @@ const Product = sequelize.define<ProductInstance>('products', {
     allowNull: false,
   },
   quantityUnit: {
+    type: DataTypes.ENUM('gm', 'ml', 'kg', 'litre', 'piece', 'bottle', 'packet', 'can'),
+    allowNull: false,
+  },
+  qty: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    defaultValue: 1,
   },
   vendorId: {
     type: DataTypes.INTEGER,
@@ -52,11 +58,13 @@ const Product = sequelize.define<ProductInstance>('products', {
   },
 });
 
-Product.hasMany(Order, {
-    sourceKey: 'id',
-    foreignKey: 'productId'
+Product.hasMany(ProductBatch, {
+  sourceKey: 'id',
+  foreignKey: 'productId',
 });
 
-Order.belongsTo(Product);
+ProductBatch.belongsTo(Product, {
+  foreignKey: 'productId',
+});
 
 export default Product;

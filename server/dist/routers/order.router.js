@@ -7,4 +7,5 @@ router.get('/vendor/:vendorId', order_controller_1.getAllOrderOfVendor);
 router.post('/vendor/:vendorId', order_controller_1.PostOrderToVendor);
 router.put('/vendor/:vendorId/:orderId', order_controller_1.UpdateOrderOfVendor);
 router.delete('/vendor/:vendorId/:orderId', order_controller_1.removeOrderOfVendor);
+router.get('/vendor/:vendorId/all', order_controller_1.getOrderOfVendorWithAllProducts);
 exports.default = router;

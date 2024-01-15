@@ -1,6 +1,8 @@
 import { Model, DataTypes, Optional } from 'sequelize';
 import { IOrder } from '../../interfaces/order.interface';
 import sequelize from '..';
+import Product from '../product/product.model';
+import ProductBatch from '../productBatch/productBatch.model';
 
 interface OrderCreationAttributes extends Optional<IOrder, 'id'> {};
 
@@ -21,27 +23,16 @@ const Order = sequelize.define<OrderInstance>('orders', {
         type: DataTypes.FLOAT,
         allowNull: false,
       },
-      totalQuantity: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-      },
-      quantityUnit: {
-        type: DataTypes.ENUM('gm', 'ml', 'piece', 'kg', 'litre'),
-        allowNull: false,
-      },
       orderDate: {
         type: DataTypes.DATE,
         allowNull: false,
+        defaultValue: DataTypes.NOW,
       },
       deliveryDate: {
         type: DataTypes.DATE,
         allowNull: false,
       },
       vendorId: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-      },
-      productId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -49,6 +40,15 @@ const Order = sequelize.define<OrderInstance>('orders', {
         type: DataTypes.INTEGER,
         allowNull: false,
       }
+});
+
+Order.hasMany(ProductBatch, {
+  sourceKey: 'id',
+  foreignKey: 'orderId'
+});
+
+ProductBatch.belongsTo(Order, {
+  foreignKey: 'orderId'
 });
 
 export default Order;

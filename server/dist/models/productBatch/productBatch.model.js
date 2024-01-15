@@ -5,9 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const __1 = __importDefault(require(".."));
-const productBatch_model_1 = __importDefault(require("../productBatch/productBatch.model"));
 ;
-const Order = __1.default.define('orders', {
+const ProductBatch = __1.default.define('productBatches', {
     id: {
         allowNull: false,
         autoIncrement: true,
@@ -15,16 +14,23 @@ const Order = __1.default.define('orders', {
         type: sequelize_1.DataTypes.INTEGER,
         unique: true,
     },
-    totalPrice: {
+    ProductName: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
+    purchaseQuantity: {
         type: sequelize_1.DataTypes.FLOAT,
         allowNull: false,
     },
-    orderDate: {
+    purchasePrice: {
+        type: sequelize_1.DataTypes.FLOAT,
+        allowNull: false,
+    },
+    receivedAt: {
         type: sequelize_1.DataTypes.DATE,
         allowNull: false,
-        defaultValue: sequelize_1.DataTypes.NOW,
     },
-    deliveryDate: {
+    expirationDate: {
         type: sequelize_1.DataTypes.DATE,
         allowNull: false,
     },
@@ -32,16 +38,17 @@ const Order = __1.default.define('orders', {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
+    productId: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+    },
+    orderId: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+    },
     restaurantId: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
-    }
+    },
 });
-Order.hasMany(productBatch_model_1.default, {
-    sourceKey: 'id',
-    foreignKey: 'orderId'
-});
-productBatch_model_1.default.belongsTo(Order, {
-    foreignKey: 'orderId'
-});
-exports.default = Order;
+exports.default = ProductBatch;
