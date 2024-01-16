@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrderOfVendorWithAllProducts = exports.removeOrderOfVendor = exports.UpdateOrderOfVendor = exports.PostOrderToVendor = exports.getAllOrderOfVendor = void 0;
+exports.postOrderToVendorWithProductBatches = exports.getOrderOfVendorWithAllProducts = exports.removeOrderOfVendor = exports.UpdateOrderOfVendor = exports.PostOrderToVendor = exports.getAllOrderOfVendor = void 0;
 const order_query_1 = require("../models/order/order.query");
 function getAllOrderOfVendor(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -87,7 +87,7 @@ function getOrderOfVendorWithAllProducts(req, res) {
             const vendorId = Number(req.params.vendorId);
             if (vendorId) {
                 const orders = yield (0, order_query_1.findOrderOfVendorWithAllProducts)(vendorId);
-                res.status(200).json(orders);
+                res.status(200).json({ data: orders });
             }
             else
                 res.status(400).json({ message: "Invalid Vendor ID." });
@@ -99,3 +99,23 @@ function getOrderOfVendorWithAllProducts(req, res) {
     });
 }
 exports.getOrderOfVendorWithAllProducts = getOrderOfVendorWithAllProducts;
+function postOrderToVendorWithProductBatches(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const vendorId = Number(req.params.vendorId);
+            if (vendorId) {
+                const order = req.body;
+                const productBatches = order.productBatches;
+                order.vendorId = vendorId;
+                const newOrder = yield (0, order_query_1.addOrderToVendorWithProductBatches)(order, productBatches);
+                res.status(201).json(newOrder);
+            }
+            else
+                res.status(400).json({ message: "Invalid Vendor ID." });
+        }
+        catch (error) {
+            res.status(500).send(error);
+        }
+    });
+}
+exports.postOrderToVendorWithProductBatches = postOrderToVendorWithProductBatches;

@@ -1,7 +1,6 @@
 import { Model, DataTypes, Optional } from 'sequelize';
 import { IOrder } from '../../interfaces/order.interface';
 import sequelize from '..';
-import Product from '../product/product.model';
 import ProductBatch from '../productBatch/productBatch.model';
 
 interface OrderCreationAttributes extends Optional<IOrder, 'id'> {};
@@ -22,6 +21,11 @@ const Order = sequelize.define<OrderInstance>('orders', {
       totalPrice: {
         type: DataTypes.FLOAT,
         allowNull: false,
+      },
+      status: {
+        type: DataTypes.ENUM('pending', 'accepted', 'preparing', 'out_for_delivery', 'delivered', 'cancelled'),
+        allowNull: false,
+        defaultValue: 'pending',
       },
       orderDate: {
         type: DataTypes.DATE,

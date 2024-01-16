@@ -1,6 +1,6 @@
 export interface IProductBatch {
     id: number;
-    ProductName: string;
+    productName: string;
     purchaseQuantity: number;
     purchasePrice: number;
     receivedAt: Date;

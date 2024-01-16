@@ -77,6 +77,7 @@ export async function addOrderToVendorWithProductBatches (order: IOrder, product
     productBatches.forEach(productBatch => {
       productBatch.orderId = newOrder.id;
       productBatch.vendorId = newOrder.vendorId;
+      productBatch.restaurantId = newOrder.restaurantId;
       productBatch.receivedAt = newOrder.orderDate;
     });
     await ProductBatch.bulkCreate(productBatches);

@@ -14,7 +14,7 @@ const ProductBatch = __1.default.define('productBatches', {
         type: sequelize_1.DataTypes.INTEGER,
         unique: true,
     },
-    ProductName: {
+    productName: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },

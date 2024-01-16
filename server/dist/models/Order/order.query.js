@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findOrderOfVendorWithAllProducts = exports.deleteOrderOfVendor = exports.editOrderOfVendor = exports.addOrderToVendor = exports.findAllOrderOfVendor = void 0;
+exports.addOrderToVendorWithProductBatches = exports.findOrderOfVendorWithAllProducts = exports.deleteOrderOfVendor = exports.editOrderOfVendor = exports.addOrderToVendor = exports.findAllOrderOfVendor = void 0;
 const order_model_1 = __importDefault(require("./order.model"));
 const productBatch_model_1 = __importDefault(require("../productBatch/productBatch.model"));
 function findAllOrderOfVendor(vendorId) {
@@ -94,3 +94,22 @@ function findOrderOfVendorWithAllProducts(vendorId) {
     });
 }
 exports.findOrderOfVendorWithAllProducts = findOrderOfVendorWithAllProducts;
+function addOrderToVendorWithProductBatches(order, productBatches) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const newOrder = yield order_model_1.default.create(order);
+            productBatches.forEach(productBatch => {
+                productBatch.orderId = newOrder.id;
+                productBatch.vendorId = newOrder.vendorId;
+                productBatch.restaurantId = newOrder.restaurantId;
+                productBatch.receivedAt = newOrder.orderDate;
+            });
+            yield productBatch_model_1.default.bulkCreate(productBatches);
+            return newOrder;
+        }
+        catch (error) {
+            throw error;
+        }
+    });
+}
+exports.addOrderToVendorWithProductBatches = addOrderToVendorWithProductBatches;
