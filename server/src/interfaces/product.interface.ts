@@ -1,5 +1,6 @@
 export interface IProduct {
     id: number;
+    uniqueIngredientId: number;
     name: string;
     price: number;
     minimumOrderAmount: number;

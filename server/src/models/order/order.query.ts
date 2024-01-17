@@ -4,6 +4,7 @@ import { IOrder } from "../../interfaces/order.interface";
 import Product from "../product/product.model";
 import ProductBatch from "../productBatch/productBatch.model";
 import { IProductBatch } from "../../interfaces/productBatch.interface";
+import axios from 'axios';
 
 
 export async function findAllOrderOfVendor(vendorId: number) {
@@ -86,3 +87,64 @@ export async function addOrderToVendorWithProductBatches (order: IOrder, product
     throw error;
   }
 }
+
+export async function findOneOrderOfVendorByOrderId (orderId: number) {
+  try {
+    const orders = await Order.findAll({
+      where: {
+        id: orderId,
+      },
+      include: {
+        model: ProductBatch,
+      },
+    });
+    console.log(orders);
+    
+    return orders;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function sendOrderUpdateToInventory(acceptOrder: { orderId: number }) {
+  try {
+    console.log(acceptOrder);
+    const orders = await findOneOrderOfVendorByOrderId(acceptOrder.orderId);
+    console.log(orders);
+
+    const transformedData = transformData(orders);
+
+    const response = await axios.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
+
+    console.log(response.data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function transformData(orders: any[]) {
+  const order = orders[0];
+
+  const { status, deliveryDate, vendorId, productBatches } = order;
+
+  const ingredientBatches = productBatches.map((productBatch: any) => {
+    return {
+      uniqueIngredientId: productBatch.uniqueIngredientId,
+      ingredientName: productBatch.productName,
+      unitOfStock: productBatch.unitOfStock,
+      purchaseQuantity: productBatch.purchaseQuantity,
+      purchasePrice: productBatch.purchasePrice,
+      expirationDate: productBatch.expirationDate,
+    };
+  });
+
+  const transformedData = {
+    status,
+    deliveryDate,
+    supplierId: vendorId, 
+    ingredientBatches,
+  };
+
+  return transformedData;
+}
+

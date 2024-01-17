@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
-import { findAllOrderOfVendor, addOrderToVendor, editOrderOfVendor, deleteOrderOfVendor, findOrderOfVendorWithAllProducts, addOrderToVendorWithProductBatches } from "../models/order/order.query";
+import { findAllOrderOfVendor, addOrderToVendor, editOrderOfVendor, deleteOrderOfVendor, 
+  findOrderOfVendorWithAllProducts, addOrderToVendorWithProductBatches, sendOrderUpdateToInventory,
+  findOneOrderOfVendorByOrderId } from "../models/order/order.query";
 
 export async function getAllOrderOfVendor (req: Request, res: Response) {
   try {
@@ -77,6 +79,32 @@ export async function postOrderToVendorWithProductBatches (req: Request, res: Re
         res.status(201).json(newOrder);
     } else res.status(400).json({ message: "Invalid Vendor ID." });
   } catch (error) {
+    res.status(500).send(error);
+  }
+}
+
+export async function sendOrderUpdateToInventoryService (req: Request, res: Response) {
+  try {
+    const vendorId = Number(req.params.vendorId); 
+    if (vendorId) {
+        const orderId = req.body;
+        await sendOrderUpdateToInventory(orderId);
+        res.status(201).json("Order Update Sent to Inventory Service.");
+    } else res.status(400).json({ message: "Invalid Vendor ID." });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
+
+export async function getOrderOfVendorByOrderId (req: Request, res: Response) {
+  try {
+    const orderId = Number(req.params.orderId);
+    if (orderId) {
+        const orders = await findOneOrderOfVendorByOrderId(orderId);
+        res.status(200).json({ data: orders });
+    } else res.status(400).json({ message: "Invalid Order ID." });
+  } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 }

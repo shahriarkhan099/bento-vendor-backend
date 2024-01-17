@@ -14,12 +14,20 @@ const ProductBatch = __1.default.define('productBatches', {
         type: sequelize_1.DataTypes.INTEGER,
         unique: true,
     },
+    uniqueIngredientId: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+    },
     productName: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
     purchaseQuantity: {
         type: sequelize_1.DataTypes.FLOAT,
+        allowNull: false,
+    },
+    unitOfStock: {
+        type: sequelize_1.DataTypes.ENUM('gm', 'ml', 'kg', 'litre', 'piece', 'bottle', 'packet', 'can'),
         allowNull: false,
     },
     purchasePrice: {

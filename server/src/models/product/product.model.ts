@@ -18,6 +18,10 @@ const Product = sequelize.define<ProductInstance>('products', {
     type: DataTypes.INTEGER,
     unique: true,
   },
+  uniqueIngredientId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
   name: {
     type: DataTypes.STRING,
     allowNull: false,

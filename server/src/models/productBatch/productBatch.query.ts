@@ -7,7 +7,7 @@ export async function findAllProductBatchOfVendor (vendorId: number) {
   try {
     const productBatches = await ProductBatch.findAll({
       where: {
-        vendorId,
+        vendorId: vendorId,
       },
     });
     return productBatches;

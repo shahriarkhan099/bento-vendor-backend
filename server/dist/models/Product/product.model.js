@@ -15,11 +15,11 @@ const Product = __1.default.define('products', {
         type: sequelize_1.DataTypes.INTEGER,
         unique: true,
     },
-    name: {
-        type: sequelize_1.DataTypes.STRING,
+    uniqueIngredientId: {
+        type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
-    image: {
+    name: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
@@ -27,19 +27,11 @@ const Product = __1.default.define('products', {
         type: sequelize_1.DataTypes.FLOAT,
         allowNull: false,
     },
-    expiryDate: {
-        type: sequelize_1.DataTypes.DATE,
-        allowNull: false,
-    },
     minimumOrderAmount: {
         type: sequelize_1.DataTypes.FLOAT,
         allowNull: false,
     },
-    volumeDiscount: {
-        type: sequelize_1.DataTypes.FLOAT,
-        allowNull: false,
-    },
-    quantityUnit: {
+    unitOfStock: {
         type: sequelize_1.DataTypes.ENUM('gm', 'ml', 'kg', 'litre', 'piece', 'bottle', 'packet', 'can'),
         allowNull: false,
     },
@@ -47,6 +39,18 @@ const Product = __1.default.define('products', {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 1,
+    },
+    volumeDiscount: {
+        type: sequelize_1.DataTypes.FLOAT,
+        allowNull: false,
+    },
+    image: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
+    expiryDate: {
+        type: sequelize_1.DataTypes.DATE,
+        allowNull: false,
     },
     vendorId: {
         type: sequelize_1.DataTypes.INTEGER,

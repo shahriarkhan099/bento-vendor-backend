@@ -19,7 +19,7 @@ function findAllProductBatchOfVendor(vendorId) {
         try {
             const productBatches = yield productBatch_model_1.default.findAll({
                 where: {
-                    vendorId,
+                    vendorId: vendorId,
                 },
             });
             return productBatches;
