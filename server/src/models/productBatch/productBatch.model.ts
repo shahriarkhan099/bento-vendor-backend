@@ -25,6 +25,10 @@ const ProductBatch = sequelize.define<ProductBatchInstance>('productBatches', {
         type: DataTypes.FLOAT,
         allowNull: false,
     },
+    unitOfStock: {
+        type: DataTypes.ENUM('gm', 'ml', 'kg', 'litre', 'piece', 'bottle', 'packet', 'can'),
+        allowNull: false,
+      },
     purchasePrice: {
         type: DataTypes.FLOAT,
         allowNull: false,

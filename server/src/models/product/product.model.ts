@@ -1,7 +1,6 @@
 import { Model, DataTypes, Optional } from 'sequelize';
 import { IProduct } from '../../interfaces/product.interface'; 
 import sequelize from '..';
-import Order from '../order/order.model';
 import ProductBatch from '../productBatch/productBatch.model';
 
 interface ProductCreationAttributes extends Optional<IProduct, 'id'> {};
@@ -23,27 +22,15 @@ const Product = sequelize.define<ProductInstance>('products', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  image: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
   price: {
     type: DataTypes.FLOAT,
-    allowNull: false,
-  },
-  expiryDate: {
-    type: DataTypes.DATE,
     allowNull: false,
   },
   minimumOrderAmount: {
     type: DataTypes.FLOAT,
     allowNull: false,
   },
-  volumeDiscount: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-  },
-  quantityUnit: {
+  unitOfStock: {
     type: DataTypes.ENUM('gm', 'ml', 'kg', 'litre', 'piece', 'bottle', 'packet', 'can'),
     allowNull: false,
   },
@@ -51,6 +38,18 @@ const Product = sequelize.define<ProductInstance>('products', {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1,
+  },
+  volumeDiscount: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  image: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  expiryDate: {
+    type: DataTypes.DATE,
+    allowNull: false,
   },
   vendorId: {
     type: DataTypes.INTEGER,
