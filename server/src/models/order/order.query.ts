@@ -5,6 +5,7 @@ import Product from "../product/product.model";
 import ProductBatch from "../productBatch/productBatch.model";
 import { IProductBatch } from "../../interfaces/productBatch.interface";
 import axios from 'axios';
+import { findVendorById } from "../vendor/vendor.query";
 
 
 export async function findAllOrderOfVendor(vendorId: number) {
@@ -74,15 +75,21 @@ export async function findOrderOfVendorWithAllProducts (vendorId: number) {
 
 export async function addOrderToVendorWithProductBatches (order: IOrder, productBatches: IProductBatch[]) {
   try {
-    const newOrder = await Order.create(order);
-    productBatches.forEach(productBatch => {
-      productBatch.orderId = newOrder.id;
-      productBatch.vendorId = newOrder.vendorId;
-      productBatch.restaurantId = newOrder.restaurantId;
-      productBatch.receivedAt = newOrder.orderDate;
-    });
-    await ProductBatch.bulkCreate(productBatches);
-    return newOrder;
+    const vendor = await findVendorById(order.vendorId);
+    if (vendor) {
+      let deliveryTime = new Date();
+      deliveryTime.setHours(deliveryTime.getHours() + vendor.orderProcessingTime);
+      order.deliveryDate = deliveryTime;
+      const newOrder = await Order.create(order);
+      productBatches.forEach(productBatch => {
+        productBatch.orderId = newOrder.id;
+        productBatch.vendorId = newOrder.vendorId;
+        productBatch.restaurantId = newOrder.restaurantId;
+        productBatch.receivedAt = newOrder.orderDate;
+      });
+      await ProductBatch.bulkCreate(productBatches);
+      return newOrder;
+    }
   } catch (error) {
     throw error;
   }

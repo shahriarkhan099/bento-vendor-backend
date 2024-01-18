@@ -1,9 +1,12 @@
 export interface IVendor {
     id: number;
-    firstName: string;
-    lastName: string;
+    name: string;
+    email: string;
     password: string;
-    type: string;
+    logo: string;
+    address: string;
+    contactNumber: string;
+    vendorType: string;
     workingDays: string[];
     openingHours: {
         startTime: string; 

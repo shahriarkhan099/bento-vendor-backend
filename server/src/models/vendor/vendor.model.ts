@@ -19,34 +19,50 @@ const Vendor = sequelize.define<VendorInstance>('vendors', {
     type: DataTypes.INTEGER,
     unique: true,
   },
-  firstName: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  lastName: {
+  email: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true,
+    },
   },
   password: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  type: {
+  logo: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  address: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  contactNumber: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  vendorType: {
     type: DataTypes.STRING,
     allowNull: false,
     defaultValue: 'normal vendor',
   },
   workingDays: {
     type: DataTypes.ARRAY(DataTypes.STRING), 
-    allowNull: false,
+    allowNull: true,
   },
   openingHours: {
     type: DataTypes.JSONB, 
-    allowNull: false,
+    allowNull: true,
   },
   orderProcessingTime: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
 });
 

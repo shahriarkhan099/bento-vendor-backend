@@ -68,15 +68,10 @@ export async function findVendorByName (searchTerm: string) {
       where: {
         [Op.or]: [
           {
-            firstName: {
+            name: {
               [Op.iLike]: `%${searchTerm}%`,
             },
-          },
-          {
-            lastName: {
-              [Op.iLike]: `%${searchTerm}%`,
-            },
-          },
+          }
         ],
       },
     });
