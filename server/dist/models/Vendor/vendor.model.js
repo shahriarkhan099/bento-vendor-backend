@@ -16,34 +16,50 @@ const Vendor = __1.default.define('vendors', {
         type: sequelize_1.DataTypes.INTEGER,
         unique: true,
     },
-    firstName: {
+    name: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
-    lastName: {
+    email: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
+        unique: true,
+        validate: {
+            isEmail: true,
+        },
     },
     password: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
-    type: {
+    logo: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
+    },
+    address: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
+    },
+    contactNumber: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
+    },
+    vendorType: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
         defaultValue: 'normal vendor',
     },
     workingDays: {
         type: sequelize_1.DataTypes.ARRAY(sequelize_1.DataTypes.STRING),
-        allowNull: false,
+        allowNull: true,
     },
     openingHours: {
         type: sequelize_1.DataTypes.JSONB,
-        allowNull: false,
+        allowNull: true,
     },
     orderProcessingTime: {
         type: sequelize_1.DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
     },
 });
 Vendor.hasMany(product_model_1.default, {

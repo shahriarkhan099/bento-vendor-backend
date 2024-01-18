@@ -97,15 +97,10 @@ function findVendorByName(searchTerm) {
                 where: {
                     [sequelize_1.Op.or]: [
                         {
-                            firstName: {
+                            name: {
                                 [sequelize_1.Op.iLike]: `%${searchTerm}%`,
                             },
-                        },
-                        {
-                            lastName: {
-                                [sequelize_1.Op.iLike]: `%${searchTerm}%`,
-                            },
-                        },
+                        }
                     ],
                 },
             });

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postOrderToVendorWithProductBatches = exports.getOrderOfVendorWithAllProducts = exports.removeOrderOfVendor = exports.UpdateOrderOfVendor = exports.PostOrderToVendor = exports.getAllOrderOfVendor = void 0;
+exports.getOrderOfVendorByOrderId = exports.sendOrderUpdateToInventoryService = exports.postOrderToVendorWithProductBatches = exports.getOrderOfVendorWithAllProducts = exports.removeOrderOfVendor = exports.updateOrderOfVendor = exports.postOrderToVendor = exports.getAllOrderOfVendor = void 0;
 const order_query_1 = require("../models/order/order.query");
 function getAllOrderOfVendor(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -24,7 +24,7 @@ function getAllOrderOfVendor(req, res) {
     });
 }
 exports.getAllOrderOfVendor = getAllOrderOfVendor;
-function PostOrderToVendor(req, res) {
+function postOrderToVendor(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const vendorId = Number(req.params.vendorId);
@@ -42,8 +42,8 @@ function PostOrderToVendor(req, res) {
         }
     });
 }
-exports.PostOrderToVendor = PostOrderToVendor;
-function UpdateOrderOfVendor(req, res) {
+exports.postOrderToVendor = postOrderToVendor;
+function updateOrderOfVendor(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const vendorId = Number(req.params.vendorId);
@@ -62,7 +62,7 @@ function UpdateOrderOfVendor(req, res) {
         }
     });
 }
-exports.UpdateOrderOfVendor = UpdateOrderOfVendor;
+exports.updateOrderOfVendor = updateOrderOfVendor;
 function removeOrderOfVendor(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -119,3 +119,39 @@ function postOrderToVendorWithProductBatches(req, res) {
     });
 }
 exports.postOrderToVendorWithProductBatches = postOrderToVendorWithProductBatches;
+function sendOrderUpdateToInventoryService(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const vendorId = Number(req.params.vendorId);
+            if (vendorId) {
+                const orderId = req.body;
+                yield (0, order_query_1.sendOrderUpdateToInventory)(orderId);
+                res.status(201).json("Order Update Sent to Inventory Service.");
+            }
+            else
+                res.status(400).json({ message: "Invalid Vendor ID." });
+        }
+        catch (error) {
+            res.status(500).send(error);
+        }
+    });
+}
+exports.sendOrderUpdateToInventoryService = sendOrderUpdateToInventoryService;
+function getOrderOfVendorByOrderId(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const orderId = Number(req.params.orderId);
+            if (orderId) {
+                const orders = yield (0, order_query_1.findOneOrderOfVendorByOrderId)(orderId);
+                res.status(200).json({ data: orders });
+            }
+            else
+                res.status(400).json({ message: "Invalid Order ID." });
+        }
+        catch (error) {
+            console.log(error);
+            res.status(500).send(error);
+        }
+    });
+}
+exports.getOrderOfVendorByOrderId = getOrderOfVendorByOrderId;

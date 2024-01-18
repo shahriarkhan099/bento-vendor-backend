@@ -13,7 +13,7 @@ export async function getAllOrderOfVendor (req: Request, res: Response) {
   }
 }
 
-export async function PostOrderToVendor (req: Request, res: Response) {
+export async function postOrderToVendor (req: Request, res: Response) {
   try {
     const vendorId = Number(req.params.vendorId); 
     if (vendorId) {
@@ -27,7 +27,7 @@ export async function PostOrderToVendor (req: Request, res: Response) {
   }
 }
 
-export async function UpdateOrderOfVendor (req: Request, res: Response) {
+export async function updateOrderOfVendor (req: Request, res: Response) {
   try {
     const vendorId = Number(req.params.vendorId);
     const orderId = Number(req.params.orderId);
