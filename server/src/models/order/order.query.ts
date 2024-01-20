@@ -33,6 +33,7 @@ export async function addOrderToVendor(order: IOrder) {
 
 export async function editOrderOfVendor(orderId: number, order: IOrder) {
   try {
+    console.log(order.status);
     const updatedOrder = await Order.update(order, {
       where: {
         id: orderId,
@@ -40,6 +41,7 @@ export async function editOrderOfVendor(orderId: number, order: IOrder) {
     });
     return updatedOrder;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
@@ -73,28 +75,6 @@ export async function findOrderOfVendorWithAllProducts (vendorId: number) {
   }
 }
 
-export async function addOrderToVendorWithProductBatches (order: IOrder, productBatches: IProductBatch[]) {
-  try {
-    const vendor = await findVendorById(order.vendorId);
-    if (vendor) {
-      let deliveryTime = new Date();
-      deliveryTime.setHours(deliveryTime.getHours() + vendor.orderProcessingTime);
-      order.deliveryDate = deliveryTime;
-      const newOrder = await Order.create(order);
-      productBatches.forEach(productBatch => {
-        productBatch.orderId = newOrder.id;
-        productBatch.vendorId = newOrder.vendorId;
-        productBatch.restaurantId = newOrder.restaurantId;
-        productBatch.receivedAt = newOrder.orderDate;
-      });
-      await ProductBatch.bulkCreate(productBatches);
-      return newOrder;
-    }
-  } catch (error) {
-    throw error;
-  }
-}
-
 export async function findOneOrderOfVendorByOrderId (orderId: number) {
   try {
     const orders = await Order.findAll({
@@ -113,17 +93,69 @@ export async function findOneOrderOfVendorByOrderId (orderId: number) {
   }
 }
 
+export async function addOrderToVendorWithProductBatches (order: IOrder, productBatches: IProductBatch[]) {
+  try {
+    const vendor = await findVendorById(order.vendorId);
+    if (vendor) {
+      let deliveryTime = new Date();
+      deliveryTime.setHours(deliveryTime.getHours() + vendor.orderProcessingTime);
+      order.deliveryDate = deliveryTime;
+      const newOrder = await Order.create(order);
+      productBatches.forEach(productBatch => {
+        productBatch.orderId = newOrder.id;
+        productBatch.vendorId = newOrder.vendorId;
+        productBatch.restaurantId = newOrder.restaurantId;
+        productBatch.receivedAt = newOrder.orderDate;
+      });
+      await ProductBatch.bulkCreate(productBatches);
+
+      await sendOrderUpdateToInventory({ orderId: newOrder.id });
+
+      return newOrder;
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
 export async function sendOrderUpdateToInventory(acceptOrder: { orderId: number }) {
   try {
-    console.log(acceptOrder);
     const orders = await findOneOrderOfVendorByOrderId(acceptOrder.orderId);
     console.log(orders);
 
-    const transformedData = transformData(orders);
+    // setTimeout(async () => {
+    //   orders[0].status = 'accepted';
+    //   console.log(orders[0].toJSON());
+      
+    //   await editOrderOfVendor(orders[0].id, orders[0]);
+    //   await Order.update(orders[0], {
+    //     where: {
+    //       id: orders[0].id,
+    //     },
+    //   });
+      
+    // }, 2000);
 
-    const response = await axios.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
+    orders[0].status = 'accepted';
+    console.log(orders[0].toJSON());
+    
+    await editOrderOfVendor(orders[0].id, orders[0]);
+    await Order.update(orders[0], {
+      where: {
+        id: orders[0].id,
+      },
+    });
 
-    console.log(response.data);
+    console.log("Order Accepted", orders[0].toJSON());
+    
+
+    if (orders[0].status === 'accepted') {
+      const transformedData = transformData(orders);
+
+      const response = await axios.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
+  
+      console.log(response.data);
+    }
   } catch (error) {
     console.error(error);
   }
@@ -155,3 +187,26 @@ function transformData(orders: any[]) {
   return transformedData;
 }
 
+export async function editOrderStatusOfVendor(order: IOrder) {
+  try {
+    if (order.status === 'pending') {
+      order.status = 'accepted';
+    } else if (order.status === 'accepted') {
+      order.status = 'preparing';
+    } else if (order.status === 'preparing') {
+      order.status = 'out_for_delivery';
+    } else if (order.status === 'out_for_delivery') {
+      order.status = 'delivered';
+    }
+    console.log(order);
+    
+    const updatedOrder = await Order.update(order, {
+      where: {
+        id: order.id,
+      },
+    });
+    return updatedOrder;
+  } catch (error) {
+    throw error;
+  }
+}
