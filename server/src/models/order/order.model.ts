@@ -25,7 +25,7 @@ const Order = sequelize.define<OrderInstance>('orders', {
       status: {
         type: DataTypes.ENUM('pending', 'accepted', 'preparing', 'out_for_delivery', 'delivered', 'cancelled'),
         allowNull: false,
-        defaultValue: 'pending',
+        defaultValue: 'preparing',
       },
       orderDate: {
         type: DataTypes.DATE,

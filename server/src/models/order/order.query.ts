@@ -33,7 +33,6 @@ export async function addOrderToVendor(order: IOrder) {
 
 export async function editOrderOfVendor(orderId: number, order: IOrder) {
   try {
-    console.log(order.status);
     const updatedOrder = await Order.update(order, {
       where: {
         id: orderId,
@@ -41,7 +40,6 @@ export async function editOrderOfVendor(orderId: number, order: IOrder) {
     });
     return updatedOrder;
   } catch (error) {
-    console.log(error);
     throw error;
   }
 }
@@ -109,7 +107,9 @@ export async function addOrderToVendorWithProductBatches (order: IOrder, product
       });
       await ProductBatch.bulkCreate(productBatches);
 
-      await sendOrderUpdateToInventory({ orderId: newOrder.id });
+      setTimeout(async () => {
+        await sendOrderUpdateToInventory({ orderId: newOrder.id });
+      }, 10000); // 5 sec timeout
 
       return newOrder;
     }
@@ -118,43 +118,20 @@ export async function addOrderToVendorWithProductBatches (order: IOrder, product
   }
 }
 
+
 export async function sendOrderUpdateToInventory(acceptOrder: { orderId: number }) {
   try {
+    console.log(acceptOrder);
     const orders = await findOneOrderOfVendorByOrderId(acceptOrder.orderId);
-    console.log(orders);
 
-    // setTimeout(async () => {
-    //   orders[0].status = 'accepted';
-    //   console.log(orders[0].toJSON());
-      
-    //   await editOrderOfVendor(orders[0].id, orders[0]);
-    //   await Order.update(orders[0], {
-    //     where: {
-    //       id: orders[0].id,
-    //     },
-    //   });
-      
-    // }, 2000);
+    orders[0].status = 'delivered';
+    const updatedOrder = await editOrderOfVendor(acceptOrder.orderId, orders[0]);
+    console.log(orders[0]);
 
-    orders[0].status = 'accepted';
-    console.log(orders[0].toJSON());
-    
-    await editOrderOfVendor(orders[0].id, orders[0]);
-    await Order.update(orders[0], {
-      where: {
-        id: orders[0].id,
-      },
-    });
-
-    console.log("Order Accepted", orders[0].toJSON());
-    
-
-    if (orders[0].status === 'accepted') {
+    if (updatedOrder) {
       const transformedData = transformData(orders);
 
       const response = await axios.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
-  
-      console.log(response.data);
     }
   } catch (error) {
     console.error(error);
@@ -187,26 +164,3 @@ function transformData(orders: any[]) {
   return transformedData;
 }
 
-export async function editOrderStatusOfVendor(order: IOrder) {
-  try {
-    if (order.status === 'pending') {
-      order.status = 'accepted';
-    } else if (order.status === 'accepted') {
-      order.status = 'preparing';
-    } else if (order.status === 'preparing') {
-      order.status = 'out_for_delivery';
-    } else if (order.status === 'out_for_delivery') {
-      order.status = 'delivered';
-    }
-    console.log(order);
-    
-    const updatedOrder = await Order.update(order, {
-      where: {
-        id: order.id,
-      },
-    });
-    return updatedOrder;
-  } catch (error) {
-    throw error;
-  }
-}
