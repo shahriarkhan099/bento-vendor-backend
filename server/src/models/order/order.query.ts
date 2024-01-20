@@ -30,10 +30,14 @@ export async function addOrderToVendor(order: IOrder) {
   }
 }
 
-
 export async function editOrderOfVendor(orderId: number, order: IOrder) {
   try {
-    const updatedOrder = await Order.update(order, {
+    await Order.update(order, {
+      where: {
+        id: orderId,
+      },
+    });
+    const updatedOrder = await Order.findOne({
       where: {
         id: orderId,
       },
@@ -107,9 +111,10 @@ export async function addOrderToVendorWithProductBatches (order: IOrder, product
       });
       await ProductBatch.bulkCreate(productBatches);
 
-      setTimeout(async () => {
-        await sendOrderUpdateToInventory({ orderId: newOrder.id });
-      }, 10000); // 5 sec timeout
+      // setTimeout(async () => {
+      //   await sendOrderUpdateToInventory({ orderId: newOrder.id });
+      // }, 10000); // 5 sec timeout
+      await sendOrderUpdateToInventory({ orderId: newOrder.id });
 
       return newOrder;
     }
@@ -119,16 +124,53 @@ export async function addOrderToVendorWithProductBatches (order: IOrder, product
 }
 
 
+// export async function sendOrderUpdateToInventory(acceptOrder: { orderId: number }) {
+//   try {
+//     const orders = await findOneOrderOfVendorByOrderId(acceptOrder.orderId);
+
+//     orders[0].status = 'accepted';
+//     console.log(orders[0].toJSON());
+    
+//     await editOrderOfVendor(orders[0].id, orders[0]);
+//     await Order.update(orders[0], {
+//       where: {
+//         id: orders[0].id,
+//       },
+//     });
+
+//     console.log("Order Accepted", orders[0].toJSON());
+    
+
+//     if (orders[0].status === 'accepted') {
+//       const transformedData = transformData(orders);
+
+//       const response = await axios.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
+  
+//       console.log(response.data);
+//     }
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
+
 export async function sendOrderUpdateToInventory(acceptOrder: { orderId: number }) {
   try {
-    console.log(acceptOrder);
     const orders = await findOneOrderOfVendorByOrderId(acceptOrder.orderId);
 
-    orders[0].status = 'delivered';
-    const updatedOrder = await editOrderOfVendor(acceptOrder.orderId, orders[0]);
-    console.log(orders[0]);
+    let order = orders[0];
 
-    if (updatedOrder) {
+    order.status = 'accepted';
+    const updatedOrder = await editOrderOfVendor(order.id, order);
+
+    if (!updatedOrder) {
+      throw new Error(`No order found with id: ${order.id}`);
+    }
+
+    order = updatedOrder;
+
+    console.log("Order Accepted", order.toJSON());
+
+    if (order.status === 'accepted') {
       const transformedData = transformData(orders);
 
       const response = await axios.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
@@ -137,6 +179,7 @@ export async function sendOrderUpdateToInventory(acceptOrder: { orderId: number 
     console.error(error);
   }
 }
+
 
 function transformData(orders: any[]) {
   const order = orders[0];

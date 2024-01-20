@@ -88,6 +88,7 @@ export async function sendOrderUpdateToInventoryService (req: Request, res: Resp
     const vendorId = Number(req.params.vendorId); 
     if (vendorId) {
         const orderId = req.body;
+        console.log("checking hit")
         await sendOrderUpdateToInventory(orderId);
         res.status(201).json("Order Update Sent to Inventory Service.");
     } else res.status(400).json({ message: "Invalid Vendor ID." });
