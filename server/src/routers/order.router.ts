@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getAllOrderOfVendor, postOrderToVendor, updateOrderOfVendor, removeOrderOfVendor, 
     getOrderOfVendorWithAllProducts, postOrderToVendorWithProductBatches, sendOrderUpdateToInventoryService,
-    getOrderOfVendorByOrderId } from '../controllers/order.controller';
+    getOrderOfVendorByOrderId, getOrderOfRestaurantWithProducts } from '../controllers/order.controller';
 const router = Router();
 
 router.get('/vendor/:vendorId', getAllOrderOfVendor);
@@ -14,5 +14,6 @@ router.post('/vendor/:vendorId/all', postOrderToVendorWithProductBatches);
 
 router.post('/vendor/:vendorId/send', sendOrderUpdateToInventoryService);
 router.get('/vendor/:vendorId/order/:orderId', getOrderOfVendorByOrderId);
+router.get('/restaurant/:restaurantId', getOrderOfRestaurantWithProducts);
 
 export default router;

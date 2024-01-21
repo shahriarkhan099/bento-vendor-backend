@@ -41,7 +41,7 @@ const Product = sequelize.define<ProductInstance>('products', {
   qty: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 1,
+    defaultValue: 0,
   },
   volumeDiscount: {
     type: DataTypes.FLOAT,

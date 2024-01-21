@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { findAllOrderOfVendor, addOrderToVendor, editOrderOfVendor, deleteOrderOfVendor, 
   findOrderOfVendorWithAllProducts, addOrderToVendorWithProductBatches, sendOrderUpdateToInventory,
-  findOneOrderOfVendorByOrderId } from "../models/order/order.query";
+  findOneOrderOfVendorByOrderId, findOrderOfRestaurantWithProducts } from "../models/order/order.query";
 
 export async function getAllOrderOfVendor (req: Request, res: Response) {
   try {
@@ -104,6 +104,19 @@ export async function getOrderOfVendorByOrderId (req: Request, res: Response) {
         const orders = await findOneOrderOfVendorByOrderId(orderId);
         res.status(200).json({ data: orders });
     } else res.status(400).json({ message: "Invalid Order ID." });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+}
+
+export async function getOrderOfRestaurantWithProducts (req: Request, res: Response) {
+  try {
+    const restaurantId = Number(req.params.restaurantId);
+    if (restaurantId) {
+        const orders = await findOrderOfRestaurantWithProducts(restaurantId);
+        res.status(200).json({ data: orders });
+    } else res.status(400).json({ message: "Invalid Restaurant ID." });
   } catch (error) {
     console.log(error);
     res.status(500).send(error);

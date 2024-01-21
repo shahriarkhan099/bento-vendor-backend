@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendOrderUpdateToInventory = exports.findOneOrderOfVendorByOrderId = exports.addOrderToVendorWithProductBatches = exports.findOrderOfVendorWithAllProducts = exports.deleteOrderOfVendor = exports.editOrderOfVendor = exports.addOrderToVendor = exports.findAllOrderOfVendor = void 0;
+exports.sendOrderUpdateToInventory = exports.addOrderToVendorWithProductBatches = exports.findOneOrderOfVendorByOrderId = exports.findOrderOfVendorWithAllProducts = exports.deleteOrderOfVendor = exports.editOrderOfVendor = exports.addOrderToVendor = exports.findAllOrderOfVendor = void 0;
 const order_model_1 = __importDefault(require("./order.model"));
 const productBatch_model_1 = __importDefault(require("../productBatch/productBatch.model"));
 const axios_1 = __importDefault(require("axios"));
@@ -48,7 +48,12 @@ exports.addOrderToVendor = addOrderToVendor;
 function editOrderOfVendor(orderId, order) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const updatedOrder = yield order_model_1.default.update(order, {
+            yield order_model_1.default.update(order, {
+                where: {
+                    id: orderId,
+                },
+            });
+            const updatedOrder = yield order_model_1.default.findOne({
                 where: {
                     id: orderId,
                 },
@@ -96,31 +101,6 @@ function findOrderOfVendorWithAllProducts(vendorId) {
     });
 }
 exports.findOrderOfVendorWithAllProducts = findOrderOfVendorWithAllProducts;
-function addOrderToVendorWithProductBatches(order, productBatches) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const vendor = yield (0, vendor_query_1.findVendorById)(order.vendorId);
-            if (vendor) {
-                let deliveryTime = new Date();
-                deliveryTime.setHours(deliveryTime.getHours() + vendor.orderProcessingTime);
-                order.deliveryDate = deliveryTime;
-                const newOrder = yield order_model_1.default.create(order);
-                productBatches.forEach(productBatch => {
-                    productBatch.orderId = newOrder.id;
-                    productBatch.vendorId = newOrder.vendorId;
-                    productBatch.restaurantId = newOrder.restaurantId;
-                    productBatch.receivedAt = newOrder.orderDate;
-                });
-                yield productBatch_model_1.default.bulkCreate(productBatches);
-                return newOrder;
-            }
-        }
-        catch (error) {
-            throw error;
-        }
-    });
-}
-exports.addOrderToVendorWithProductBatches = addOrderToVendorWithProductBatches;
 function findOneOrderOfVendorByOrderId(orderId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -141,15 +121,72 @@ function findOneOrderOfVendorByOrderId(orderId) {
     });
 }
 exports.findOneOrderOfVendorByOrderId = findOneOrderOfVendorByOrderId;
+function addOrderToVendorWithProductBatches(order, productBatches) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const vendor = yield (0, vendor_query_1.findVendorById)(order.vendorId);
+            if (vendor) {
+                let deliveryTime = new Date();
+                deliveryTime.setHours(deliveryTime.getHours() + vendor.orderProcessingTime);
+                order.deliveryDate = deliveryTime;
+                const newOrder = yield order_model_1.default.create(order);
+                productBatches.forEach(productBatch => {
+                    productBatch.orderId = newOrder.id;
+                    productBatch.vendorId = newOrder.vendorId;
+                    productBatch.restaurantId = newOrder.restaurantId;
+                    productBatch.receivedAt = newOrder.orderDate;
+                });
+                yield productBatch_model_1.default.bulkCreate(productBatches);
+                // setTimeout(async () => {
+                //   await sendOrderUpdateToInventory({ orderId: newOrder.id });
+                // }, 10000); // 5 sec timeout
+                yield sendOrderUpdateToInventory({ orderId: newOrder.id });
+                return newOrder;
+            }
+        }
+        catch (error) {
+            throw error;
+        }
+    });
+}
+exports.addOrderToVendorWithProductBatches = addOrderToVendorWithProductBatches;
+// export async function sendOrderUpdateToInventory(acceptOrder: { orderId: number }) {
+//   try {
+//     const orders = await findOneOrderOfVendorByOrderId(acceptOrder.orderId);
+//     orders[0].status = 'accepted';
+//     console.log(orders[0].toJSON());
+//     await editOrderOfVendor(orders[0].id, orders[0]);
+//     await Order.update(orders[0], {
+//       where: {
+//         id: orders[0].id,
+//       },
+//     });
+//     console.log("Order Accepted", orders[0].toJSON());
+//     if (orders[0].status === 'accepted') {
+//       const transformedData = transformData(orders);
+//       const response = await axios.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
+//       console.log(response.data);
+//     }
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
 function sendOrderUpdateToInventory(acceptOrder) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            console.log(acceptOrder);
             const orders = yield findOneOrderOfVendorByOrderId(acceptOrder.orderId);
-            console.log(orders);
-            const transformedData = transformData(orders);
-            const response = yield axios_1.default.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
-            console.log(response.data);
+            let order = orders[0];
+            order.status = 'accepted';
+            const updatedOrder = yield editOrderOfVendor(order.id, order);
+            if (!updatedOrder) {
+                throw new Error(`No order found with id: ${order.id}`);
+            }
+            order = updatedOrder;
+            console.log("Order Accepted", order.toJSON());
+            if (order.status === 'accepted') {
+                const transformedData = transformData(orders);
+                const response = yield axios_1.default.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
+            }
         }
         catch (error) {
             console.error(error);

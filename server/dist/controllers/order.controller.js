@@ -125,6 +125,7 @@ function sendOrderUpdateToInventoryService(req, res) {
             const vendorId = Number(req.params.vendorId);
             if (vendorId) {
                 const orderId = req.body;
+                console.log("checking hit");
                 yield (0, order_query_1.sendOrderUpdateToInventory)(orderId);
                 res.status(201).json("Order Update Sent to Inventory Service.");
             }

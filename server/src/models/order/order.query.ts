@@ -6,6 +6,7 @@ import ProductBatch from "../productBatch/productBatch.model";
 import { IProductBatch } from "../../interfaces/productBatch.interface";
 import axios from 'axios';
 import { findVendorById } from "../vendor/vendor.query";
+import Vendor from "../vendor/vendor.model";
 
 
 export async function findAllOrderOfVendor(vendorId: number) {
@@ -14,6 +15,58 @@ export async function findAllOrderOfVendor(vendorId: number) {
       where: {
         vendorId,
       },
+    });
+    return orders;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function findOneOrderOfVendor(orderId: number) {
+  try {
+    const order = await Order.findOne({
+      where: {
+        id: orderId,
+      },
+    });
+    return order;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function findOrderOfVendorWithAllProducts (vendorId: number) {
+  try {
+    const orders = await Order.findAll({
+      where: {
+        vendorId,
+      },
+      include: [
+      {
+        model: ProductBatch,
+      },
+    ],
+    });
+    return orders;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function findOrderOfRestaurantWithProducts (restaurantId: number) {
+  try {
+    const orders = await Order.findAll({
+      where: {
+        restaurantId,
+      },
+      include: [
+      {
+        model: ProductBatch,
+      },
+      {
+        model: Vendor,
+      },
+    ],
     });
     return orders;
   } catch (error) {
@@ -37,11 +90,7 @@ export async function editOrderOfVendor(orderId: number, order: IOrder) {
         id: orderId,
       },
     });
-    const updatedOrder = await Order.findOne({
-      where: {
-        id: orderId,
-      },
-    });
+    const updatedOrder = await findOneOrderOfVendor(orderId);
     return updatedOrder;
   } catch (error) {
     throw error;
@@ -61,25 +110,9 @@ export async function deleteOrderOfVendor(orderId: number) {
   }
 }
 
-export async function findOrderOfVendorWithAllProducts (vendorId: number) {
-  try {
-    const orders = await Order.findAll({
-      where: {
-        vendorId,
-      },
-      include: {
-        model: ProductBatch,
-      },
-    });
-    return orders;
-  } catch (error) {
-    throw error;
-  }
-}
-
 export async function findOneOrderOfVendorByOrderId (orderId: number) {
   try {
-    const orders = await Order.findAll({
+    const orders = await Order.findOne({
       where: {
         id: orderId,
       },
@@ -111,10 +144,9 @@ export async function addOrderToVendorWithProductBatches (order: IOrder, product
       });
       await ProductBatch.bulkCreate(productBatches);
 
-      // setTimeout(async () => {
-      //   await sendOrderUpdateToInventory({ orderId: newOrder.id });
-      // }, 10000); // 5 sec timeout
-      await sendOrderUpdateToInventory({ orderId: newOrder.id });
+      setTimeout(async () => {
+        await sendOrderUpdateToInventory({ orderId: newOrder.id });
+      }, 10000); // 10 sec timeout
 
       return newOrder;
     }
@@ -123,66 +155,20 @@ export async function addOrderToVendorWithProductBatches (order: IOrder, product
   }
 }
 
-
-// export async function sendOrderUpdateToInventory(acceptOrder: { orderId: number }) {
-//   try {
-//     const orders = await findOneOrderOfVendorByOrderId(acceptOrder.orderId);
-
-//     orders[0].status = 'accepted';
-//     console.log(orders[0].toJSON());
-    
-//     await editOrderOfVendor(orders[0].id, orders[0]);
-//     await Order.update(orders[0], {
-//       where: {
-//         id: orders[0].id,
-//       },
-//     });
-
-//     console.log("Order Accepted", orders[0].toJSON());
-    
-
-//     if (orders[0].status === 'accepted') {
-//       const transformedData = transformData(orders);
-
-//       const response = await axios.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
-  
-//       console.log(response.data);
-//     }
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
-
 export async function sendOrderUpdateToInventory(acceptOrder: { orderId: number }) {
   try {
     const orders = await findOneOrderOfVendorByOrderId(acceptOrder.orderId);
 
-    let order = orders[0];
-
-    order.status = 'accepted';
-    const updatedOrder = await editOrderOfVendor(order.id, order);
-
-    if (!updatedOrder) {
-      throw new Error(`No order found with id: ${order.id}`);
-    }
-
-    order = updatedOrder;
-
-    console.log("Order Accepted", order.toJSON());
-
-    if (order.status === 'accepted') {
-      const transformedData = transformData(orders);
-
-      const response = await axios.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
-    }
+    const transformedData = transformData(orders);
+    const response = await axios.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
+    console.log(response.data);
   } catch (error) {
     console.error(error);
   }
 }
 
 
-function transformData(orders: any[]) {
-  const order = orders[0];
+function transformData(order: any) {
 
   const { status, deliveryDate, vendorId, productBatches } = order;
 
@@ -206,4 +192,3 @@ function transformData(orders: any[]) {
 
   return transformedData;
 }
-
