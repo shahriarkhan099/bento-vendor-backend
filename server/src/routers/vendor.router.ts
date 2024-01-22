@@ -1,7 +1,9 @@
 import { Router } from 'express';
-import { getAllVendors, postVendor, updateVendor, removeVendor, getVendorByName, getVendorByProductName, getAllVendorsWithProducts, getVendorById, getVendorByIdWithProducts, getVendorsByNameAndProductName } from '../controllers/vendor.controller';
+import { getAllVendors, postVendor, updateVendor, removeVendor, getVendorByName, getVendorByProductName, getAllVendorsWithProducts, getVendorById, getVendorByIdWithProducts, getVendorsByNameAndProductName, authenticate, register, } from '../controllers/vendor.controller';
 const router = Router();
 
+router.post('/authenticate', authenticate);
+router.post('/register', register);
 router.get('/', getAllVendors);
 router.post('/', postVendor);
 router.put('/:vendorId', updateVendor);

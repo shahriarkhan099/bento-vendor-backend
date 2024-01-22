@@ -1,5 +1,37 @@
 import { Request, Response } from "express";
-import { findAllVendors, findAllVendorsWithProducts, addVendor, editVendor, deleteVendor, findVendorByName, findVendorByProductName, findVendorById, findVendorByIdWithProducts, findVendorsByNameAndProductName } from "../models/vendor/vendor.query";
+import { findAllVendors, findAllVendorsWithProducts, addVendor, editVendor, deleteVendor, findVendorByName, findVendorByProductName, findVendorById, findVendorByIdWithProducts, findVendorsByNameAndProductName, authenticateVendor, registerVendor, } from "../models/vendor/vendor.query";
+
+export async function authenticate(req: Request, res: Response) {
+  try {
+    const { email, password } = req.body;
+
+    const token = await authenticateVendor(email, password);
+
+    if (!token) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    res.status(200).json({ token });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
+
+export async function register(req: Request, res: Response) {
+  try {
+    const vendor = req.body;
+
+    const token = await registerVendor(vendor);
+
+    if (!token) {
+      return res.status(400).json({ message: "Vendor with this email already exists" });
+    }
+
+    res.status(201).json({ token });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
 
 export async function getAllVendors (req: Request, res: Response) {
   try {

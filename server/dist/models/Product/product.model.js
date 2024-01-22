@@ -38,7 +38,7 @@ const Product = __1.default.define('products', {
     qty: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
-        defaultValue: 1,
+        defaultValue: 0,
     },
     volumeDiscount: {
         type: sequelize_1.DataTypes.FLOAT,

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrderOfVendorByOrderId = exports.sendOrderUpdateToInventoryService = exports.postOrderToVendorWithProductBatches = exports.getOrderOfVendorWithAllProducts = exports.removeOrderOfVendor = exports.updateOrderOfVendor = exports.postOrderToVendor = exports.getAllOrderOfVendor = void 0;
+exports.getOrderOfRestaurantWithProducts = exports.getOrderOfVendorByOrderId = exports.sendOrderUpdateToInventoryService = exports.postOrderToVendorWithProductBatches = exports.getOrderOfVendorWithAllProducts = exports.removeOrderOfVendor = exports.updateOrderOfVendor = exports.postOrderToVendor = exports.getAllOrderOfVendor = void 0;
 const order_query_1 = require("../models/order/order.query");
 function getAllOrderOfVendor(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -156,3 +156,21 @@ function getOrderOfVendorByOrderId(req, res) {
     });
 }
 exports.getOrderOfVendorByOrderId = getOrderOfVendorByOrderId;
+function getOrderOfRestaurantWithProducts(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const restaurantId = Number(req.params.restaurantId);
+            if (restaurantId) {
+                const orders = yield (0, order_query_1.findOrderOfRestaurantWithProducts)(restaurantId);
+                res.status(200).json({ data: orders });
+            }
+            else
+                res.status(400).json({ message: "Invalid Restaurant ID." });
+        }
+        catch (error) {
+            console.log(error);
+            res.status(500).send(error);
+        }
+    });
+}
+exports.getOrderOfRestaurantWithProducts = getOrderOfRestaurantWithProducts;

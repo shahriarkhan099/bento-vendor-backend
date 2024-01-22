@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendOrderUpdateToInventory = exports.addOrderToVendorWithProductBatches = exports.findOneOrderOfVendorByOrderId = exports.findOrderOfVendorWithAllProducts = exports.deleteOrderOfVendor = exports.editOrderOfVendor = exports.addOrderToVendor = exports.findAllOrderOfVendor = void 0;
+exports.sendOrderUpdateToInventory = exports.addOrderToVendorWithProductBatches = exports.findOneOrderOfVendorByOrderId = exports.deleteOrderOfVendor = exports.editOrderOfVendor = exports.addOrderToVendor = exports.findOrderOfRestaurantWithProducts = exports.findOrderOfVendorWithAllProducts = exports.findOneOrderOfVendor = exports.findAllOrderOfVendor = void 0;
 const order_model_1 = __importDefault(require("./order.model"));
 const productBatch_model_1 = __importDefault(require("../productBatch/productBatch.model"));
 const axios_1 = __importDefault(require("axios"));
 const vendor_query_1 = require("../vendor/vendor.query");
+const vendor_model_1 = __importDefault(require("../vendor/vendor.model"));
 function findAllOrderOfVendor(vendorId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -33,6 +34,67 @@ function findAllOrderOfVendor(vendorId) {
     });
 }
 exports.findAllOrderOfVendor = findAllOrderOfVendor;
+function findOneOrderOfVendor(orderId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const order = yield order_model_1.default.findOne({
+                where: {
+                    id: orderId,
+                },
+            });
+            return order;
+        }
+        catch (error) {
+            throw error;
+        }
+    });
+}
+exports.findOneOrderOfVendor = findOneOrderOfVendor;
+function findOrderOfVendorWithAllProducts(vendorId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const orders = yield order_model_1.default.findAll({
+                where: {
+                    vendorId,
+                },
+                include: [
+                    {
+                        model: productBatch_model_1.default,
+                    },
+                ],
+            });
+            return orders;
+        }
+        catch (error) {
+            throw error;
+        }
+    });
+}
+exports.findOrderOfVendorWithAllProducts = findOrderOfVendorWithAllProducts;
+function findOrderOfRestaurantWithProducts(restaurantId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const orders = yield order_model_1.default.findAll({
+                where: {
+                    restaurantId,
+                },
+                include: [
+                    {
+                        model: productBatch_model_1.default,
+                    },
+                    {
+                        model: vendor_model_1.default,
+                    },
+                ],
+            });
+            return orders;
+        }
+        catch (error) {
+            throw error;
+        }
+    });
+}
+exports.findOrderOfRestaurantWithProducts = findOrderOfRestaurantWithProducts;
 function addOrderToVendor(order) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -53,11 +115,7 @@ function editOrderOfVendor(orderId, order) {
                     id: orderId,
                 },
             });
-            const updatedOrder = yield order_model_1.default.findOne({
-                where: {
-                    id: orderId,
-                },
-            });
+            const updatedOrder = yield findOneOrderOfVendor(orderId);
             return updatedOrder;
         }
         catch (error) {
@@ -82,29 +140,10 @@ function deleteOrderOfVendor(orderId) {
     });
 }
 exports.deleteOrderOfVendor = deleteOrderOfVendor;
-function findOrderOfVendorWithAllProducts(vendorId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const orders = yield order_model_1.default.findAll({
-                where: {
-                    vendorId,
-                },
-                include: {
-                    model: productBatch_model_1.default,
-                },
-            });
-            return orders;
-        }
-        catch (error) {
-            throw error;
-        }
-    });
-}
-exports.findOrderOfVendorWithAllProducts = findOrderOfVendorWithAllProducts;
 function findOneOrderOfVendorByOrderId(orderId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const orders = yield order_model_1.default.findAll({
+            const orders = yield order_model_1.default.findOne({
                 where: {
                     id: orderId,
                 },
@@ -137,10 +176,9 @@ function addOrderToVendorWithProductBatches(order, productBatches) {
                     productBatch.receivedAt = newOrder.orderDate;
                 });
                 yield productBatch_model_1.default.bulkCreate(productBatches);
-                // setTimeout(async () => {
-                //   await sendOrderUpdateToInventory({ orderId: newOrder.id });
-                // }, 10000); // 5 sec timeout
-                yield sendOrderUpdateToInventory({ orderId: newOrder.id });
+                setTimeout(() => __awaiter(this, void 0, void 0, function* () {
+                    yield sendOrderUpdateToInventory({ orderId: newOrder.id });
+                }), 10000); // 10 sec timeout
                 return newOrder;
             }
         }
@@ -150,43 +188,13 @@ function addOrderToVendorWithProductBatches(order, productBatches) {
     });
 }
 exports.addOrderToVendorWithProductBatches = addOrderToVendorWithProductBatches;
-// export async function sendOrderUpdateToInventory(acceptOrder: { orderId: number }) {
-//   try {
-//     const orders = await findOneOrderOfVendorByOrderId(acceptOrder.orderId);
-//     orders[0].status = 'accepted';
-//     console.log(orders[0].toJSON());
-//     await editOrderOfVendor(orders[0].id, orders[0]);
-//     await Order.update(orders[0], {
-//       where: {
-//         id: orders[0].id,
-//       },
-//     });
-//     console.log("Order Accepted", orders[0].toJSON());
-//     if (orders[0].status === 'accepted') {
-//       const transformedData = transformData(orders);
-//       const response = await axios.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
-//       console.log(response.data);
-//     }
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
 function sendOrderUpdateToInventory(acceptOrder) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const orders = yield findOneOrderOfVendorByOrderId(acceptOrder.orderId);
-            let order = orders[0];
-            order.status = 'accepted';
-            const updatedOrder = yield editOrderOfVendor(order.id, order);
-            if (!updatedOrder) {
-                throw new Error(`No order found with id: ${order.id}`);
-            }
-            order = updatedOrder;
-            console.log("Order Accepted", order.toJSON());
-            if (order.status === 'accepted') {
-                const transformedData = transformData(orders);
-                const response = yield axios_1.default.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
-            }
+            const transformedData = transformData(orders);
+            const response = yield axios_1.default.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
+            console.log(response.data);
         }
         catch (error) {
             console.error(error);
@@ -194,8 +202,7 @@ function sendOrderUpdateToInventory(acceptOrder) {
     });
 }
 exports.sendOrderUpdateToInventory = sendOrderUpdateToInventory;
-function transformData(orders) {
-    const order = orders[0];
+function transformData(order) {
     const { status, deliveryDate, vendorId, productBatches } = order;
     const ingredientBatches = productBatches.map((productBatch) => {
         return {

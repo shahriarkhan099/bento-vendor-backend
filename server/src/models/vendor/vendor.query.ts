@@ -1,7 +1,64 @@
 import { Op } from "sequelize";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import Vendor from "./vendor.model";
 import { IVendor } from "../../interfaces/vendor.interface";
 import Product from "../product/product.model";
+
+export async function authenticateVendor(email: string, password: string) {
+  try {
+    const vendor = await Vendor.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!vendor) {
+      return null;
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, vendor.password);
+
+    if (!isPasswordCorrect) {
+      return null;
+    }
+
+    const token = jwt.sign({ id: vendor.id, email: vendor.email }, "secret", { expiresIn: 6500000 });
+    return { token, id: vendor.id };
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function registerVendor(vendor: IVendor) {
+  try {
+    const { email, password } = vendor;
+
+    // Validate email is not taken
+    const existingVendor = await Vendor.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    //  Validate if Vendor with this email already exists
+    if (existingVendor) {
+      return null;
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newVendor = await Vendor.create({
+      ...vendor,
+      password: hashedPassword,
+    });
+
+    const token = jwt.sign({ email }, "secret", { expiresIn: 6500000 });
+    return token;
+  } catch (error) {
+    throw error;
+  }
+}
 
 export async function findAllVendors () {
   try {

@@ -11,4 +11,5 @@ router.get('/vendor/:vendorId/all', order_controller_1.getOrderOfVendorWithAllPr
 router.post('/vendor/:vendorId/all', order_controller_1.postOrderToVendorWithProductBatches);
 router.post('/vendor/:vendorId/send', order_controller_1.sendOrderUpdateToInventoryService);
 router.get('/vendor/:vendorId/order/:orderId', order_controller_1.getOrderOfVendorByOrderId);
+router.get('/restaurant/:restaurantId', order_controller_1.getOrderOfRestaurantWithProducts);
 exports.default = router;
