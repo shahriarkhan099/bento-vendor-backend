@@ -56,6 +56,10 @@ const Vendor = sequelize.define<VendorInstance>('vendors', {
     type: DataTypes.ARRAY(DataTypes.STRING), 
     allowNull: true,
   },
+  bookedTimeSlots: {
+    type: DataTypes.ARRAY(DataTypes.STRING), 
+    allowNull: true,
+  },
   openingHours: {
     type: DataTypes.JSONB, 
     allowNull: true,

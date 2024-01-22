@@ -53,6 +53,10 @@ const Vendor = __1.default.define('vendors', {
         type: sequelize_1.DataTypes.ARRAY(sequelize_1.DataTypes.STRING),
         allowNull: true,
     },
+    bookedTimeSlots: {
+        type: sequelize_1.DataTypes.ARRAY(sequelize_1.DataTypes.STRING),
+        allowNull: true,
+    },
     openingHours: {
         type: sequelize_1.DataTypes.JSONB,
         allowNull: true,

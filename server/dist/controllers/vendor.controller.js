@@ -9,8 +9,40 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getVendorsByNameAndProductName = exports.getVendorByIdWithProducts = exports.getAllVendorsWithProducts = exports.getVendorById = exports.getVendorByProductName = exports.getVendorByName = exports.removeVendor = exports.updateVendor = exports.postVendor = exports.getAllVendors = void 0;
+exports.getVendorsByNameAndProductName = exports.getVendorByIdWithProducts = exports.getAllVendorsWithProducts = exports.getVendorById = exports.getVendorByProductName = exports.getVendorByName = exports.removeVendor = exports.updateVendor = exports.postVendor = exports.getAllVendors = exports.register = exports.authenticate = void 0;
 const vendor_query_1 = require("../models/vendor/vendor.query");
+function authenticate(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { email, password } = req.body;
+            const token = yield (0, vendor_query_1.authenticateVendor)(email, password);
+            if (!token) {
+                return res.status(401).json({ message: "Invalid credentials" });
+            }
+            res.status(200).json({ token });
+        }
+        catch (error) {
+            res.status(500).send(error);
+        }
+    });
+}
+exports.authenticate = authenticate;
+function register(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const vendor = req.body;
+            const token = yield (0, vendor_query_1.registerVendor)(vendor);
+            if (!token) {
+                return res.status(400).json({ message: "Vendor with this email already exists" });
+            }
+            res.status(201).json({ token });
+        }
+        catch (error) {
+            res.status(500).send(error);
+        }
+    });
+}
+exports.register = register;
 function getAllVendors(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
