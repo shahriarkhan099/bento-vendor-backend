@@ -52,6 +52,7 @@ const Vendor = __1.default.define('vendors', {
     workingDays: {
         type: sequelize_1.DataTypes.ARRAY(sequelize_1.DataTypes.STRING),
         allowNull: true,
+        defaultValue: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     },
     bookedTimeSlots: {
         type: sequelize_1.DataTypes.ARRAY(sequelize_1.DataTypes.STRING),
@@ -60,10 +61,41 @@ const Vendor = __1.default.define('vendors', {
     openingHours: {
         type: sequelize_1.DataTypes.JSONB,
         allowNull: true,
+        defaultValue: {
+            Monday: {
+                open: '00:00',
+                close: '00:00',
+            },
+            Tuesday: {
+                open: '00:00',
+                close: '00:00',
+            },
+            Wednesday: {
+                open: '00:00',
+                close: '00:00',
+            },
+            Thursday: {
+                open: '00:00',
+                close: '00:00',
+            },
+            Friday: {
+                open: '00:00',
+                close: '00:00',
+            },
+            Saturday: {
+                open: '00:00',
+                close: '00:00',
+            },
+            Sunday: {
+                open: '00:00',
+                close: '00:00',
+            },
+        },
     },
     orderProcessingTime: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: true,
+        defaultValue: 6
     },
 });
 Vendor.hasMany(product_model_1.default, {

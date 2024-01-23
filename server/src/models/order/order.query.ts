@@ -132,9 +132,6 @@ export async function addOrderToVendorWithProductBatches (order: IOrder, product
   try {
     const vendor = await findVendorById(order.vendorId);
     if (vendor) {
-      let deliveryTime = new Date();
-      deliveryTime.setHours(deliveryTime.getHours() + vendor.orderProcessingTime);
-      order.deliveryDate = deliveryTime;
       const newOrder = await Order.create(order);
       productBatches.forEach(productBatch => {
         productBatch.orderId = newOrder.id;

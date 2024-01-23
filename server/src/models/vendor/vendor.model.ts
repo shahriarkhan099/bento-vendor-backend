@@ -11,7 +11,7 @@ interface VendorInstance extends Model<IVendor, VendorCreationAttributes>, IVend
   updatedAt?: Date;
 }
 
-const Vendor = sequelize.define<VendorInstance>('vendors', {
+const Vendor = sequelize.define<VendorInstance>("vendors", {
   id: {
     allowNull: false,
     autoIncrement: true,
@@ -50,23 +50,37 @@ const Vendor = sequelize.define<VendorInstance>('vendors', {
   vendorType: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'normal vendor',
+    defaultValue: "normal vendor",
   },
   workingDays: {
-    type: DataTypes.ARRAY(DataTypes.STRING), 
+    type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true,
+    defaultValue: [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ],
   },
   bookedTimeSlots: {
-    type: DataTypes.ARRAY(DataTypes.STRING), 
+    type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true,
   },
   openingHours: {
-    type: DataTypes.JSONB, 
+    type: DataTypes.JSONB,
     allowNull: true,
+    defaultValue: {
+      start: "06:30",
+      end: "23:00",
+    },
   },
   orderProcessingTime: {
     type: DataTypes.INTEGER,
     allowNull: true,
+    defaultValue: 6,
   },
 });
 
