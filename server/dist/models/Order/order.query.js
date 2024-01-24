@@ -165,9 +165,6 @@ function addOrderToVendorWithProductBatches(order, productBatches) {
         try {
             const vendor = yield (0, vendor_query_1.findVendorById)(order.vendorId);
             if (vendor) {
-                let deliveryTime = new Date();
-                deliveryTime.setHours(deliveryTime.getHours() + vendor.orderProcessingTime);
-                order.deliveryDate = deliveryTime;
                 const newOrder = yield order_model_1.default.create(order);
                 productBatches.forEach(productBatch => {
                     productBatch.orderId = newOrder.id;
