@@ -157,7 +157,7 @@ export async function sendOrderUpdateToInventory(acceptOrder: { orderId: number 
     const orders = await findOneOrderOfVendorByOrderId(acceptOrder.orderId);
 
     const transformedData = transformData(orders);
-    const response = await axios.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
+    const response = await axios.post('https://inventory-server-klzl.onrender.com/v1/order/restaurant/1/ingredientBatches', transformedData);
     console.log(response.data);
   } catch (error) {
     console.error(error);
