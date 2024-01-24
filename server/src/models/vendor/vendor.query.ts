@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Vendor from "./vendor.model";
 import { IVendor } from "../../interfaces/vendor.interface";
