@@ -1,12 +1,12 @@
 import { Op } from "sequelize";
 import Order from "./order.model";
 import { IOrder } from "../../interfaces/order.interface";
-import Product from "../product/product.model";
 import ProductBatch from "../productBatch/productBatch.model";
 import { IProductBatch } from "../../interfaces/productBatch.interface";
 import axios from 'axios';
 import { findVendorById } from "../vendor/vendor.query";
 import Vendor from "../vendor/vendor.model";
+import config from "../../config";
 
 
 export async function findAllOrderOfVendor(vendorId: number) {
@@ -157,7 +157,7 @@ export async function sendOrderUpdateToInventory(acceptOrder: { orderId: number 
     const orders = await findOneOrderOfVendorByOrderId(acceptOrder.orderId);
 
     const transformedData = transformData(orders);
-    const response = await axios.post('https://inventory-server-klzl.onrender.com/v1/order/restaurant/1/ingredientBatches', transformedData);
+    const response = await axios.post(`${config.HELPER_API}/v1/order/restaurant/1/ingredientBatches`, transformedData);
     console.log(response.data);
   } catch (error) {
     console.error(error);

@@ -18,6 +18,7 @@ const productBatch_model_1 = __importDefault(require("../productBatch/productBat
 const axios_1 = __importDefault(require("axios"));
 const vendor_query_1 = require("../vendor/vendor.query");
 const vendor_model_1 = __importDefault(require("../vendor/vendor.model"));
+const config_1 = __importDefault(require("../../config"));
 function findAllOrderOfVendor(vendorId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -190,7 +191,7 @@ function sendOrderUpdateToInventory(acceptOrder) {
         try {
             const orders = yield findOneOrderOfVendorByOrderId(acceptOrder.orderId);
             const transformedData = transformData(orders);
-            const response = yield axios_1.default.post('https://inventory-server-klzl.onrender.com/v1/order/restaurant/1/ingredientBatches', transformedData);
+            const response = yield axios_1.default.post(`${config_1.default.HELPER_API}/v1/order/restaurant/1/ingredientBatches`, transformedData);
             console.log(response.data);
         }
         catch (error) {

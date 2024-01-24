@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.findVendorsByNameAndProductName = exports.findVendorByIdWithProducts = exports.findVendorById = exports.findVendorByProductName = exports.findVendorByName = exports.deleteVendor = exports.editVendor = exports.addVendor = exports.findAllVendorsWithProducts = exports.findAllVendors = exports.registerVendor = exports.authenticateVendor = void 0;
 const sequelize_1 = require("sequelize");
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const vendor_model_1 = __importDefault(require("./vendor.model"));
 const product_model_1 = __importDefault(require("../product/product.model"));
@@ -29,7 +29,7 @@ function authenticateVendor(email, password) {
             if (!vendor) {
                 return null;
             }
-            const isPasswordCorrect = yield bcrypt_1.default.compare(password, vendor.password);
+            const isPasswordCorrect = yield bcryptjs_1.default.compare(password, vendor.password);
             if (!isPasswordCorrect) {
                 return null;
             }
@@ -56,7 +56,7 @@ function registerVendor(vendor) {
             if (existingVendor) {
                 return null;
             }
-            const hashedPassword = yield bcrypt_1.default.hash(password, 10);
+            const hashedPassword = yield bcryptjs_1.default.hash(password, 10);
             const newVendor = yield vendor_model_1.default.create(Object.assign(Object.assign({}, vendor), { password: hashedPassword }));
             const token = jsonwebtoken_1.default.sign({ email }, "secret", { expiresIn: 6500000 });
             return token;
