@@ -190,7 +190,7 @@ function sendOrderUpdateToInventory(acceptOrder) {
         try {
             const orders = yield findOneOrderOfVendorByOrderId(acceptOrder.orderId);
             const transformedData = transformData(orders);
-            const response = yield axios_1.default.post('http://localhost:4000/v1/order/restaurant/1/ingredientBatches', transformedData);
+            const response = yield axios_1.default.post('https://inventory-server-klzl.onrender.com/v1/order/restaurant/1/ingredientBatches', transformedData);
             console.log(response.data);
         }
         catch (error) {
