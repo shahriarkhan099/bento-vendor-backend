@@ -158,7 +158,7 @@ export async function sendOrderUpdateToInventory(acceptOrder: { orderId: number 
 
     const transformedData = transformData(orders);
     const response = await axios.post(`${config.HELPER_API}/v1/order/restaurant/1/ingredientBatches`, transformedData);
-    console.log(response.data);
+    console.log( 'sending order to inventory', response.data);
   } catch (error) {
     console.error(error);
   }
