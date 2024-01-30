@@ -192,7 +192,7 @@ function sendOrderUpdateToInventory(acceptOrder) {
             const orders = yield findOneOrderOfVendorByOrderId(acceptOrder.orderId);
             const transformedData = transformData(orders);
             const response = yield axios_1.default.post(`${config_1.default.HELPER_API}/v1/order/restaurant/1/ingredientBatches`, transformedData);
-            console.log(response.data);
+            console.log('sending order to inventory', response.data);
         }
         catch (error) {
             console.error(error);

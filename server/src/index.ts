@@ -7,6 +7,10 @@ import sequelize from "./models";
 import orderRouter from "./routers/order.router";
 import productRouter from "./routers/product.router";
 import vendorRouter from "./routers/vendor.router";
+import cron from "node-cron";
+import renewTimeSlots from "./utils/renewTimeSlots";
+
+cron.schedule("0 0 * * *", renewTimeSlots);
 
 const app: Express = express();
 

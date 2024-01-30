@@ -201,3 +201,17 @@ export async function findVendorsByNameAndProductName(searchTerm: string) {
     throw error;
   }
 }
+
+export async function emptyBookedTimeSlotsForAllVendors () {
+  try {
+    const vendors = await Vendor.findAll();
+    const vendorsWithEmptyBookedTimeSlots = await Promise.all(vendors.map(async (vendor) => {
+      vendor.bookedTimeSlots = [];
+      await vendor.save();
+      return vendor;
+    }));
+    return vendorsWithEmptyBookedTimeSlots;
+  } catch (error) {
+    throw error;
+  }
+}
