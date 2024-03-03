@@ -17,6 +17,7 @@ const app: Express = express();
 app.use(
   cors({
     credentials: true,
+    exposedHeaders: ["Authorization"],
   })
 );
 

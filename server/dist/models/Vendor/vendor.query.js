@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.emptyBookedTimeSlots = exports.findVendorsByNameAndProductName = exports.findVendorByIdWithProducts = exports.findVendorById = exports.findVendorByProductName = exports.findVendorByName = exports.deleteVendor = exports.editVendor = exports.addVendor = exports.findAllVendorsWithProducts = exports.findAllVendors = exports.registerVendor = exports.authenticateVendor = void 0;
+exports.emptyBookedTimeSlotsForAllVendors = exports.findVendorsByNameAndProductName = exports.findVendorByIdWithProducts = exports.findVendorById = exports.findVendorByProductName = exports.findVendorByName = exports.deleteVendor = exports.editVendor = exports.addVendor = exports.findAllVendorsWithProducts = exports.findAllVendors = exports.registerVendor = exports.authenticateVendor = void 0;
 const sequelize_1 = require("sequelize");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -236,19 +236,20 @@ function findVendorsByNameAndProductName(searchTerm) {
     });
 }
 exports.findVendorsByNameAndProductName = findVendorsByNameAndProductName;
-function emptyBookedTimeSlots(vendorId) {
+function emptyBookedTimeSlotsForAllVendors() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let vendor = yield vendor_model_1.default.findByPk(vendorId);
-            if (vendor) {
+            const vendors = yield vendor_model_1.default.findAll();
+            const vendorsWithEmptyBookedTimeSlots = yield Promise.all(vendors.map((vendor) => __awaiter(this, void 0, void 0, function* () {
                 vendor.bookedTimeSlots = [];
                 yield vendor.save();
-            }
-            return vendor;
+                return vendor;
+            })));
+            return vendorsWithEmptyBookedTimeSlots;
         }
         catch (error) {
             throw error;
         }
     });
 }
-exports.emptyBookedTimeSlots = emptyBookedTimeSlots;
+exports.emptyBookedTimeSlotsForAllVendors = emptyBookedTimeSlotsForAllVendors;

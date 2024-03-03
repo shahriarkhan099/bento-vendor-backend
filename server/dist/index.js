@@ -21,9 +21,13 @@ const models_1 = __importDefault(require("./models"));
 const order_router_1 = __importDefault(require("./routers/order.router"));
 const product_router_1 = __importDefault(require("./routers/product.router"));
 const vendor_router_1 = __importDefault(require("./routers/vendor.router"));
+const node_cron_1 = __importDefault(require("node-cron"));
+const renewTimeSlots_1 = __importDefault(require("./utils/renewTimeSlots"));
+node_cron_1.default.schedule("0 0 * * *", renewTimeSlots_1.default);
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     credentials: true,
+    exposedHeaders: ["Authorization"],
 }));
 app.use((0, compression_1.default)());
 app.use((0, cookie_parser_1.default)());
